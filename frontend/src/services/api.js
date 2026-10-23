@@ -1,6 +1,14 @@
 import axios from 'axios';
 
-const rawBaseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const isLocal =
+  typeof window !== 'undefined' &&
+  (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+const defaultBaseURL = isLocal
+  ? 'http://localhost:5000/api'
+  : 'https://find-it-lost-and-found-eksu.vercel.app/api';
+
+const rawBaseURL = import.meta.env.VITE_API_BASE_URL || defaultBaseURL;
 const cleanBaseURL = rawBaseURL.trim().replace(/\/+$/, '');
 const baseURL = cleanBaseURL.endsWith('/api') ? cleanBaseURL : `${cleanBaseURL}/api`;
 
@@ -37,7 +45,9 @@ api.interceptors.response.use(
     if (error.code === 'ECONNABORTED' || message.includes('timeout')) {
       message = 'Connection timed out. The backend server could not reach the database. Please verify your MongoDB Atlas IP whitelist or database connection.';
     } else if (error.message === 'Network Error') {
-      message = 'Unable to reach the backend server. Please ensure the backend is running at http://localhost:5000.';
+      message = isLocal
+        ? 'Unable to reach the backend server. Please ensure the backend is running at http://localhost:5000.'
+        : 'Unable to reach the backend server. Please check your network connection or verify that the backend API is live.';
     }
     
     // Attach user-friendly message to error object

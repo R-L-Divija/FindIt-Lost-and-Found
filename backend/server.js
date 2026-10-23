@@ -15,12 +15,26 @@ const clientUrl = process.env.CLIENT_URL ? process.env.CLIENT_URL.trim().replace
 const allowedOrigins = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "https://find-it-lost-and-found-livid.vercel.app",
     ...(clientUrl ? [clientUrl, `${clientUrl}/`] : []),
 ];
 
 app.use(
     cors({
-        origin: allowedOrigins,
+        origin: (origin, callback) => {
+            // Allow requests with no origin (like mobile apps, curl, postman)
+            if (!origin) return callback(null, true);
+
+            const cleanOrigin = origin.replace(/\/+$/, '');
+            if (
+                allowedOrigins.includes(cleanOrigin) ||
+                cleanOrigin.endsWith(".vercel.app")
+            ) {
+                return callback(null, true);
+            }
+
+            return callback(new Error(`Blocked by CORS: ${origin}`));
+        },
         credentials: true,
     })
 );
