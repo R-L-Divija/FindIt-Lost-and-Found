@@ -1,0 +1,22 @@
+
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Build files
+frontend/dist/
+backend/dist/
+
+# Environment secrets
+.env
+.env.*
+!.env.example
+!.env.sample
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.sample
+
+# Logs and local files
+npm-debug.log*
+.DS_Store
