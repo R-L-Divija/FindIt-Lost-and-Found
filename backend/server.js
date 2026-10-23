@@ -11,13 +11,17 @@ const { protect } = require("./middleware/authMiddleware");
 
 const app = express();
 
+const clientUrl = process.env.CLIENT_URL ? process.env.CLIENT_URL.trim().replace(/\/+$/, '') : null;
+const allowedOrigins = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    ...(clientUrl ? [clientUrl, `${clientUrl}/`] : []),
+];
+
 app.use(
     cors({
-        origin: [
-            "http://localhost:5173",
-            "http://127.0.0.1:5173",
-            ...(process.env.CLIENT_URL ? [process.env.CLIENT_URL] : []),
-        ],
+        origin: allowedOrigins,
+        credentials: true,
     })
 );
 
